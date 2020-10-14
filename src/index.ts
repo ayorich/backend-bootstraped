@@ -4,7 +4,7 @@ import express, { Server, Request, Response } from 'express';
 
 import graphQlServer from './server';
 
-const PORT = process.env.PORT || 5555;
+const PORT = process.env.PORT || 8360;
 
 // Add your subscriptions
 

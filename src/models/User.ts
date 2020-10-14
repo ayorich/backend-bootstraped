@@ -24,8 +24,8 @@ export class User {
 	phoneNumber: string;
 
 	@Field(() => Boolean)
-	@Property()
-	isAdmin = false;
+	@Property({ required: false, default: false })
+	isAdmin: boolean;
 
 	@Field(() => ID)
 	@Property({ required: true })

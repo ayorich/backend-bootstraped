@@ -30,7 +30,8 @@
         "rootDir": "./src",
         "baseUrl": "./src",
         "types": [
-            "node"
+            "node",
+            "jest"
         ],
         "forceConsistentCasingInFileNames": true,
         "typeRoots": [

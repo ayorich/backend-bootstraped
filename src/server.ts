@@ -1,20 +1,24 @@
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import { connect } from 'mongoose';
+import config from './config';
+
 import 'reflect-metadata';
 
 // resolvers
 import resolvers from './graphql';
 
 const graphQlServer = async (app: any) => {
+	// console.log(await process.cwd())
 	const schema = await buildSchema({
 		resolvers,
-		emitSchemaFile: true,
 		validate: false,
+		emitSchemaFile: true
 	});
 
 	// create mongoose connection
-	const mongoose = await connect('mongodb://localhost:27017/fortvest', {
+	const mongoose = await connect(config.getDbUrl(), {
+
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 		useCreateIndex: true,
