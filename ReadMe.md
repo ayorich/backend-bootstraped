@@ -1,5 +1,6 @@
-##Backend bootstrapped 
-###Technologies used
+## Backend bootstrapped 
+
+### Technologies used
 -Typescript
 -GraphQl
 -Webpack
