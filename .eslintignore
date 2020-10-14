@@ -1,0 +1,8 @@
+/build/**
+/node_modules/**
+/tmp/**
+/dist/**
+/src/webpack/**
+webpack.config.js
+
+# Add any other files or folders that you want eslint to ignore
