@@ -6,4 +6,4 @@
 -Webpack\
 -Express\
 -typegoose\
--type-graphgl\
+-type-graphgl
