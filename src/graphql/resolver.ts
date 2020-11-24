@@ -16,7 +16,14 @@ export class UserResolver {
 	}
 	@Mutation(() => User)
 	async registerUser(@Arg('input') input: RegisterUserInput): Promise<User> {
-		const { email, phoneNumber, lastName, firstName, isAdmin, uid } = input;
+		const {
+			email,
+			phoneNumber,
+			lastName,
+			firstName,
+			password,
+			passwordConfirm,
+		} = input;
 		try {
 			// const verify = await firebase.admin.auth().verifyIdToken(token);
 
@@ -28,8 +35,8 @@ export class UserResolver {
 				firstName,
 				lastName,
 				phoneNumber,
-				uid,
-				isAdmin,
+				password,
+				passwordConfirm,
 			});
 
 			if (userCreated) {

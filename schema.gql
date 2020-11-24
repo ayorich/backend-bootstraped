@@ -3,6 +3,11 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
 type Mutation {
   registerUser(input: RegisterUserInput!): User!
 }
@@ -15,10 +20,10 @@ type Query {
 input RegisterUserInput {
   email: String!
   firstName: String!
-  isAdmin: String = "false"
   lastName: String
+  password: String!
+  passwordConfirm: String!
   phoneNumber: String
-  uid: String!
 }
 
 """The User model"""
@@ -26,8 +31,17 @@ type User {
   email: String!
   firstName: String!
   id: ID!
-  isAdmin: Boolean!
   lastName: String!
+  password: String!
+  passwordChangedAt: DateTime!
+  passwordConfirm: String!
+  passwordResetExpires: DateTime!
+  passwordResetToken: String!
   phoneNumber: String!
-  uid: ID!
+  role: userRole!
+}
+
+enum userRole {
+  ADMIN
+  USER
 }

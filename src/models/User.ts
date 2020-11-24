@@ -1,6 +1,15 @@
-import { ObjectType, Field, ID } from 'type-graphql';
-import { prop as Property, getModelForClass } from '@typegoose/typegoose';
+import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
+import { prop as Property, getModelForClass, pre } from '@typegoose/typegoose';
+import { userRole } from './types';
 
+registerEnumType(userRole, { name: 'userRole' });
+
+@pre<User>('save', function (next: any) {
+	if (this.password !== this.passwordConfirm) {
+		throw new Error('Password are not the same');
+	}
+	next();
+})
 @ObjectType({ description: 'The User model' })
 export class User {
 	@Field(() => ID)
@@ -8,7 +17,7 @@ export class User {
 	id: string;
 
 	@Field()
-	@Property({ required: true, trim: true })
+	@Property({ required: true, trim: true, unique: true })
 	email: string;
 
 	@Field()
@@ -23,12 +32,28 @@ export class User {
 	@Property({ required: true, trim: true })
 	phoneNumber: string;
 
-	@Field(() => Boolean)
-	@Property({ required: false, default: false })
-	isAdmin: boolean;
+	@Field()
+	@Property({ required: true, trim: true, select: false })
+	password: string;
 
-	@Field(() => ID)
-	@Property({ required: true })
-	uid: string;
+	@Field()
+	@Property({ required: true, trim: true, select: false })
+	passwordConfirm: string;
+
+	@Field()
+	@Property({ required: false })
+	passwordChangedAt?: Date;
+
+	@Field()
+	@Property({ required: false })
+	passwordResetExpires?: Date;
+
+	@Field()
+	@Property({ required: false })
+	passwordResetToken?: string;
+
+	@Field(_type => userRole)
+	@Property({ required: false, default: userRole.USER })
+	role?: userRole;
 }
 export const UserModel = getModelForClass(User);

@@ -20,9 +20,11 @@ export class RegisterUserInput implements Partial<User> {
 	@IsPhoneNumber('NG')
 	phoneNumber: string;
 
-	@Field(() => String, { nullable: true })
-	isAdmin = false;
+	@Field()
+	@Length(6, 25)
+	password: string;
 
 	@Field()
-	uid: string;
+	@Length(6, 25)
+	passwordConfirm: string;
 }
