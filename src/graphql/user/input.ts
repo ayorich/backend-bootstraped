@@ -1,6 +1,6 @@
 import { InputType, Field } from 'type-graphql';
-import { Length, IsEmail, IsPhoneNumber } from 'class-validator';
-import { User } from '../models/User';
+import { Length } from 'class-validator';
+import { User } from '../../models/User';
 
 @InputType()
 export class RegisterUserInput implements Partial<User> {
@@ -13,18 +13,12 @@ export class RegisterUserInput implements Partial<User> {
 	lastName: string;
 
 	@Field()
-	@IsEmail()
 	email: string;
 
-	@Field({ nullable: true })
-	@IsPhoneNumber('NG')
+	@Field()
 	phoneNumber: string;
 
 	@Field()
 	@Length(6, 25)
 	password: string;
-
-	@Field()
-	@Length(6, 25)
-	passwordConfirm: string;
 }

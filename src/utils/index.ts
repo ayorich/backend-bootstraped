@@ -1,5 +1,4 @@
-import firebase from './firebase';
+import { comparePassword, hashPassword } from './bcrypt';
+import { signToken } from './jwt';
 
-export default {
-	firebase,
-};
+export { hashPassword, comparePassword, signToken };

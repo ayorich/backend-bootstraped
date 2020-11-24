@@ -1,13 +1,17 @@
 import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
 import { prop as Property, getModelForClass, pre } from '@typegoose/typegoose';
 import { userRole } from './types';
+import { hashPassword } from '../utils';
 
 registerEnumType(userRole, { name: 'userRole' });
 
 @pre<User>('save', function (next: any) {
-	if (this.password !== this.passwordConfirm) {
-		throw new Error('Password are not the same');
-	}
+	// ONLY RUN IF PASSWORD IS NOT MODIFIED
+	if (!this.isModified('password')) return next();
+
+	// HASH THE PASSWORD
+	this.password = hashPassword(this.password);
+
 	next();
 })
 @ObjectType({ description: 'The User model' })
@@ -35,10 +39,6 @@ export class User {
 	@Field()
 	@Property({ required: true, trim: true, select: false })
 	password: string;
-
-	@Field()
-	@Property({ required: true, trim: true, select: false })
-	passwordConfirm: string;
 
 	@Field()
 	@Property({ required: false })
