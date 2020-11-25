@@ -15,6 +15,7 @@ input LogInUserInput {
 
 type Mutation {
   registerUser(input: RegisterUserInput!): UserWithToken!
+  updateUserPassword(input: UpdateUserPasswordInput!): UserWithToken!
 }
 
 type Query {
@@ -30,6 +31,11 @@ input RegisterUserInput {
   lastName: String
   password: String!
   phoneNumber: String!
+}
+
+input UpdateUserPasswordInput {
+  currentPassword: String!
+  newPassword: String!
 }
 
 """The User model"""

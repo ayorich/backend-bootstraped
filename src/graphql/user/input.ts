@@ -32,3 +32,14 @@ export class LogInUserInput implements Partial<User> {
 	@Length(6, 25)
 	password: string;
 }
+
+@InputType()
+export class UpdateUserPasswordInput {
+	@Field()
+	@Length(6, 25)
+	currentPassword: string;
+
+	@Field()
+	@Length(6, 25)
+	newPassword: string;
+}

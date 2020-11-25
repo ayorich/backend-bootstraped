@@ -1,8 +1,12 @@
-import { Resolver, Arg, Query, Mutation } from 'type-graphql';
+import { Resolver, Arg, Query, Mutation, Ctx } from 'type-graphql';
 import { comparePassword, generateToken, verfyToken } from '../../utils';
 import { User, UserModel } from '../../models/User';
 
-import { LogInUserInput, RegisterUserInput } from './input';
+import {
+	LogInUserInput,
+	RegisterUserInput,
+	UpdateUserPasswordInput,
+} from './input';
 import { UserWithToken } from './userWithTokenType';
 import { verifyPayload } from '../type';
 
@@ -22,10 +26,10 @@ export class UserResolver {
 	async currentUser(@Arg('token') token: string): Promise<User> {
 		try {
 			const decoded = (await verfyToken(token)) as verifyPayload;
-			const user = await UserModel.findById(decoded.id);
 
-			if (!user) throw new Error('Invalid Token');
-			console.log(user);
+			const user = await UserModel.findById(decoded.id);
+			if (!user) throw new Error('user does not exist');
+
 			return user;
 		} catch (error) {
 			throw new Error(error);
@@ -71,6 +75,40 @@ export class UserResolver {
 			const token = generateToken(user._id);
 
 			return { user, token };
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	@Mutation(() => UserWithToken)
+	async updateUserPassword(
+		@Arg('input') input: UpdateUserPasswordInput,
+		@Ctx('token') token: string
+	): Promise<UserWithToken> {
+		const { currentPassword, newPassword } = input;
+		try {
+			console.log(newPassword);
+
+			const decoded = (await verfyToken(token)) as verifyPayload;
+
+			const user = await UserModel.findById(decoded.id).select(
+				'+password'
+			);
+			if (!user) throw new Error('user does not exist');
+
+			const isPasswordCorrect = User.correctPassword(
+				currentPassword,
+				user.password
+			);
+			if (!isPasswordCorrect)
+				throw new Error('Your current password is wrong.');
+
+			user.password = newPassword;
+			await user.save();
+
+			const newToken = generateToken(user._id);
+
+			return { user, token: newToken };
 		} catch (error) {
 			throw new Error(error);
 		}

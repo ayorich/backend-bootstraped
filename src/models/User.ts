@@ -1,7 +1,7 @@
 import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
 import { prop as Property, getModelForClass, pre } from '@typegoose/typegoose';
 import { userRole } from './types';
-import { hashPassword } from '../utils';
+import { comparePassword, hashPassword } from '../utils';
 
 registerEnumType(userRole, { name: 'userRole' });
 
@@ -54,21 +54,18 @@ export class User {
 	@Field(_type => userRole)
 	@Property({ required: false, default: userRole.USER })
 	role?: userRole;
+
+	public static correctPassword(
+		currentPassword: string,
+		hashedPassword: string
+	) {
+		console.log(hashedPassword);
+		console.log(currentPassword);
+		const isCorrect = comparePassword(currentPassword, hashedPassword);
+		return isCorrect;
+	}
 }
 
 export const UserModel = getModelForClass(User, {
 	schemaOptions: { timestamps: true },
 });
-
-// User.methods.correctPassword = async (
-// 	candidatePassword,
-// 	userPassword
-//   ) => {
-// 	const isCorrect = await bcrypt.compare(candidatePassword, userPassword);
-// 	return isCorrect;
-//   };
-
-// public static async correctPassword(...args: any[]) {
-// 	console.log('hello, ' + JSON.stringify([...args], null, 2));
-// 	return true;
-// }
