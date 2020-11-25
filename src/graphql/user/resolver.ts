@@ -3,7 +3,7 @@ import { comparePassword, generateToken, verfyToken } from '../../utils';
 import { User, UserModel } from '../../models/User';
 
 import { LogInUserInput, RegisterUserInput } from './input';
-import { Token } from './interface';
+import { UserWithToken } from './userWithTokenType';
 import { verifyPayload } from '../type';
 
 @Resolver()
@@ -18,8 +18,22 @@ export class UserResolver {
 		return await UserModel.find();
 	}
 
-	@Query(() => Token)
-	async logIn(@Arg('input') input: LogInUserInput): Promise<Token> {
+	@Query(() => User)
+	async currentUser(@Arg('token') token: string): Promise<User> {
+		try {
+			const decoded = (await verfyToken(token)) as verifyPayload;
+			const user = await UserModel.findById(decoded.id);
+
+			if (!user) throw new Error('Invalid Token');
+			console.log(user);
+			return user;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	@Query(() => UserWithToken)
+	async logIn(@Arg('input') input: LogInUserInput): Promise<UserWithToken> {
 		const { email, password } = input;
 		try {
 			const user = await UserModel.findOne({ email }).select('+password');
@@ -32,42 +46,31 @@ export class UserResolver {
 
 			const token = generateToken(user._id);
 
-			return { token };
+			return { user, token };
 		} catch (error) {
 			throw new Error(error);
 		}
 	}
 
-	@Query(() => User)
-	async currentUser(@Arg('token') token: string): Promise<User> {
-		try {
-			const decoded = (await verfyToken(token)) as verifyPayload;
-
-			const user = await UserModel.findById(decoded.id);
-
-			if (!user) throw new Error('Invalid Token');
-
-			return user;
-		} catch (error) {
-			throw new Error(error);
-		}
-	}
-
-	@Mutation(() => Token)
-	async registerUser(@Arg('input') input: RegisterUserInput): Promise<Token> {
+	@Mutation(() => UserWithToken)
+	async registerUser(
+		@Arg('input') input: RegisterUserInput
+	): Promise<UserWithToken> {
 		const { email, phoneNumber, lastName, firstName, password } = input;
 		try {
-			const userCreated = await UserModel.create({
+			const user = await UserModel.create({
 				email,
 				firstName,
 				lastName,
 				phoneNumber,
 				password,
 			});
-			if (!userCreated) throw new Error('User not created');
 
-			const token = generateToken(userCreated._id);
-			return { token };
+			if (!user) throw new Error('User not created');
+
+			const token = generateToken(user._id);
+
+			return { user, token };
 		} catch (error) {
 			throw new Error(error);
 		}

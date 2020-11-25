@@ -17,7 +17,6 @@ registerEnumType(userRole, { name: 'userRole' });
 @ObjectType({ description: 'The User model' })
 export class User {
 	@Field(() => ID)
-	@Property({ required: false })
 	id: string;
 
 	@Field()
@@ -29,27 +28,27 @@ export class User {
 	firstName: string;
 
 	@Field()
-	@Property({ required: false, trim: true })
+	@Property({ trim: true })
 	lastName: string;
 
 	@Field()
 	@Property({ required: true, trim: true })
 	phoneNumber: string;
 
-	@Field()
+	@Field({ nullable: true })
 	@Property({ required: true, trim: true, select: false })
 	password: string;
 
 	@Field()
-	@Property({ required: false })
+	@Property()
 	passwordChangedAt?: Date;
 
 	@Field()
-	@Property({ required: false })
+	@Property()
 	passwordResetExpires?: Date;
 
 	@Field()
-	@Property({ required: false })
+	@Property()
 	passwordResetToken?: string;
 
 	@Field(_type => userRole)

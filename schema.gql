@@ -14,12 +14,12 @@ input LogInUserInput {
 }
 
 type Mutation {
-  registerUser(input: RegisterUserInput!): Token!
+  registerUser(input: RegisterUserInput!): UserWithToken!
 }
 
 type Query {
   currentUser(token: String!): User!
-  logIn(input: LogInUserInput!): Token!
+  logIn(input: LogInUserInput!): UserWithToken!
   returnAllUser: [User!]
   returnSingleUser(id: String!): User!
 }
@@ -32,18 +32,13 @@ input RegisterUserInput {
   phoneNumber: String!
 }
 
-"""Token"""
-type Token {
-  token: String!
-}
-
 """The User model"""
 type User {
   email: String!
   firstName: String!
   id: ID!
   lastName: String!
-  password: String!
+  password: String
   passwordChangedAt: DateTime!
   passwordResetExpires: DateTime!
   passwordResetToken: String!
@@ -54,4 +49,10 @@ type User {
 enum userRole {
   ADMIN
   USER
+}
+
+"""User object with Token"""
+type UserWithToken {
+  token: String!
+  user: User!
 }
