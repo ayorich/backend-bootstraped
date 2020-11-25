@@ -56,4 +56,20 @@ export class User {
 	@Property({ required: false, default: userRole.USER })
 	role?: userRole;
 }
-export const UserModel = getModelForClass(User);
+
+export const UserModel = getModelForClass(User, {
+	schemaOptions: { timestamps: true },
+});
+
+// User.methods.correctPassword = async (
+// 	candidatePassword,
+// 	userPassword
+//   ) => {
+// 	const isCorrect = await bcrypt.compare(candidatePassword, userPassword);
+// 	return isCorrect;
+//   };
+
+// public static async correctPassword(...args: any[]) {
+// 	console.log('hello, ' + JSON.stringify([...args], null, 2));
+// 	return true;
+// }

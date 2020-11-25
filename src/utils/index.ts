@@ -1,4 +1,4 @@
 import { comparePassword, hashPassword } from './bcrypt';
-import { signToken } from './jwt';
+import { generateToken, verfyToken } from './jwt';
 
-export { hashPassword, comparePassword, signToken };
+export { hashPassword, comparePassword, generateToken, verfyToken };

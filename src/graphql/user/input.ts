@@ -22,3 +22,13 @@ export class RegisterUserInput implements Partial<User> {
 	@Length(6, 25)
 	password: string;
 }
+
+@InputType()
+export class LogInUserInput implements Partial<User> {
+	@Field()
+	email: string;
+
+	@Field()
+	@Length(6, 25)
+	password: string;
+}
