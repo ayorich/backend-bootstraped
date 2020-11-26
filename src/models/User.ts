@@ -49,6 +49,10 @@ export class User {
 	@Property({ required: true, trim: true, select: false })
 	password: string;
 
+	@Field(_type => userRole)
+	@Property({ required: false, default: userRole.USER })
+	role?: userRole;
+
 	@Field()
 	@Property()
 	passwordChangedAt?: Date;
@@ -61,9 +65,9 @@ export class User {
 	@Property()
 	passwordResetToken?: string;
 
-	@Field(_type => userRole)
-	@Property({ required: false, default: userRole.USER })
-	role?: userRole;
+	@Field()
+	@Property({ required: true, default: false })
+	isVerified?: boolean;
 
 	//staticsMethod
 	public static correctPassword(

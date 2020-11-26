@@ -24,6 +24,20 @@ export class RegisterUserInput implements Partial<User> {
 }
 
 @InputType()
+export class UpdateUserInput implements Partial<User> {
+	@Field()
+	@Length(3, 25)
+	firstName: string;
+
+	@Field()
+	@Length(3, 25)
+	lastName?: string;
+
+	@Field()
+	phoneNumber: string;
+}
+
+@InputType()
 export class LogInUserInput implements Partial<User> {
 	@Field()
 	email: string;
@@ -48,9 +62,6 @@ export class UpdateUserPasswordInput {
 export class ForgetPasswordInput {
 	@Field()
 	email: string;
-
-	@Field()
-	baseUrl: string;
 }
 
 @InputType()

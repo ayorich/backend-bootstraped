@@ -12,11 +12,13 @@ import {
 	LogInUserInput,
 	RegisterUserInput,
 	ResetPasswordInput,
+	UpdateUserInput,
 	UpdateUserPasswordInput,
 } from './input';
 import { UserWithToken } from './userWithTokenTypes';
 import { verifyPayload } from '../types';
 import { Email } from '../../services';
+import { BASE_URL } from '../../constants/baseUrl';
 
 @Resolver()
 export class UserResolver {
@@ -66,7 +68,7 @@ export class UserResolver {
 
 	@Query(() => String)
 	async forgotPassword(@Arg('input') input: ForgetPasswordInput) {
-		const { email, baseUrl } = input;
+		const { email } = input;
 		try {
 			const user = await UserModel.findOne({ email });
 			if (!user)
@@ -74,7 +76,7 @@ export class UserResolver {
 
 			const resetToken = await user.createPasswordResetToken();
 
-			const resetURL = `${baseUrl}?resetToken=${resetToken}`;
+			const resetURL = `${BASE_URL}/auth/action?mode=resetPassword&resetToken=${resetToken}`;
 			await new Email(user, resetURL).sendPasswordReset();
 
 			return 'Reset token succefully sent to your mail box!';
@@ -102,7 +104,7 @@ export class UserResolver {
 			user.passwordResetExpires = undefined;
 			await user.save();
 
-			return 'Password reset succefully!';
+			return 'Password reset successfully!';
 		} catch (error) {
 			throw new Error(error);
 		}
@@ -126,7 +128,8 @@ export class UserResolver {
 
 			const token = generateToken(user._id);
 
-			const url = 'http://localhost:8360/';
+			const url = `${BASE_URL}/auth/action?mode=verifyEmail&verifyToken=${token}`;
+
 			await new Email(user, url).sendWelcome();
 
 			return { user, token };
@@ -162,6 +165,47 @@ export class UserResolver {
 			const newToken = generateToken(user._id);
 
 			return { user, token: newToken };
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	@Mutation(() => User)
+	async updateUser(
+		@Arg('input') input: UpdateUserInput,
+		@Ctx('token') token: string
+	): Promise<User> {
+		try {
+			const decoded = (await verfyToken(token)) as verifyPayload;
+
+			const user = await UserModel.findByIdAndUpdate(
+				{ _id: decoded.id },
+				input,
+				{ new: true }
+			);
+
+			if (!user) throw new Error('user does not exist');
+
+			return user;
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	@Mutation(() => User)
+	async verifyUser(@Arg('token') token: string): Promise<User> {
+		try {
+			const decoded = (await verfyToken(token)) as verifyPayload;
+
+			const user = await UserModel.findByIdAndUpdate(
+				{ _id: decoded.id },
+				{ isVerified: true },
+				{ new: true }
+			);
+
+			if (!user) throw new Error('user not verified');
+
+			return user;
 		} catch (error) {
 			throw new Error(error);
 		}

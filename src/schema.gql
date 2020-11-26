@@ -7,7 +7,6 @@
 scalar DateTime
 
 input ForgetPasswordInput {
-  baseUrl: String!
   email: String!
 }
 
@@ -19,7 +18,9 @@ input LogInUserInput {
 type Mutation {
   registerUser(input: RegisterUserInput!): UserWithToken!
   resetPassword(input: ResetPasswordInput!): String!
+  updateUser(input: UpdateUserInput!): User!
   updateUserPassword(input: UpdateUserPasswordInput!): UserWithToken!
+  verifyUser(token: String!): User!
 }
 
 type Query {
@@ -43,6 +44,12 @@ input ResetPasswordInput {
   token: String!
 }
 
+input UpdateUserInput {
+  firstName: String!
+  lastName: String!
+  phoneNumber: String!
+}
+
 input UpdateUserPasswordInput {
   currentPassword: String!
   newPassword: String!
@@ -53,6 +60,7 @@ type User {
   email: String!
   firstName: String!
   id: ID!
+  isVerified: Boolean!
   lastName: String!
   password: String
   passwordChangedAt: DateTime!
