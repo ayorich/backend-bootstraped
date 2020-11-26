@@ -1,9 +1,7 @@
-## Backend bootstrapped 
+## Backend bootstrapped
 
-### Technologies used
--Typescript\
--GraphQl\
--Webpack\
--Express\
--typegoose\
--type-graphgl
+## CLONE REPO
+
+git clone -b backend-bootstrap-jwtoken https://github.com/ayorich/backend-bootstrapped.git newName\
+del /F /S /Q /A .git\
+rmdir .git
