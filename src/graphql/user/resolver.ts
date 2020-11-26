@@ -7,8 +7,9 @@ import {
 	RegisterUserInput,
 	UpdateUserPasswordInput,
 } from './input';
-import { UserWithToken } from './userWithTokenType';
-import { verifyPayload } from '../type';
+import { UserWithToken } from './userWithTokenTypes';
+import { verifyPayload } from '../types';
+import { Email } from '../../services';
 
 @Resolver()
 export class UserResolver {
@@ -73,6 +74,9 @@ export class UserResolver {
 			if (!user) throw new Error('User not created');
 
 			const token = generateToken(user._id);
+
+			const url = 'http://localhost:8360/';
+			await new Email(user, url).sendWelcome();
 
 			return { user, token };
 		} catch (error) {

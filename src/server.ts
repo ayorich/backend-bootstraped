@@ -10,7 +10,7 @@ import resolvers from './graphql';
 import { verfyToken } from './utils';
 import { join } from 'path';
 import { UserModel } from './models/User';
-import { verifyPayload } from './graphql/type';
+import { verifyPayload } from './graphql/types';
 
 const graphQlServer = async (app: any) => {
 	// console.log(await process.cwd())
