@@ -6,6 +6,11 @@
 # The javascript `Date` as string. Type represents date and time as the ISO Date string.
 scalar DateTime
 
+input ForgetPasswordInput {
+  baseUrl: String!
+  email: String!
+}
+
 input LogInUserInput {
   email: String!
   password: String!
@@ -13,11 +18,13 @@ input LogInUserInput {
 
 type Mutation {
   registerUser(input: RegisterUserInput!): UserWithToken!
+  resetPassword(input: ResetPasswordInput!): String!
   updateUserPassword(input: UpdateUserPasswordInput!): UserWithToken!
 }
 
 type Query {
   currentUser(token: String!): User!
+  forgotPassword(input: ForgetPasswordInput!): String!
   logIn(input: LogInUserInput!): UserWithToken!
   returnAllUser: [User!]
   returnSingleUser(id: String!): User!
@@ -29,6 +36,11 @@ input RegisterUserInput {
   lastName: String
   password: String!
   phoneNumber: String!
+}
+
+input ResetPasswordInput {
+  newPassword: String!
+  token: String!
 }
 
 input UpdateUserPasswordInput {

@@ -1,10 +1,17 @@
 import { Resolver, Arg, Query, Mutation, Ctx } from 'type-graphql';
-import { comparePassword, generateToken, verfyToken } from '../../utils';
+import {
+	comparePassword,
+	generateToken,
+	hashedToken,
+	verfyToken,
+} from '../../utils';
 import { User, UserModel } from '../../models/User';
 
 import {
+	ForgetPasswordInput,
 	LogInUserInput,
 	RegisterUserInput,
+	ResetPasswordInput,
 	UpdateUserPasswordInput,
 } from './input';
 import { UserWithToken } from './userWithTokenTypes';
@@ -57,6 +64,50 @@ export class UserResolver {
 		}
 	}
 
+	@Query(() => String)
+	async forgotPassword(@Arg('input') input: ForgetPasswordInput) {
+		const { email, baseUrl } = input;
+		try {
+			const user = await UserModel.findOne({ email });
+			if (!user)
+				throw new Error('There is no user with this email address');
+
+			const resetToken = await user.createPasswordResetToken();
+
+			const resetURL = `${baseUrl}?resetToken=${resetToken}`;
+			await new Email(user, resetURL).sendPasswordReset();
+
+			return 'Reset token succefully sent to your mail box!';
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	@Mutation(() => String)
+	async resetPassword(@Arg('input') input: ResetPasswordInput) {
+		const { token, newPassword } = input;
+		try {
+			const resetToken = hashedToken(token);
+
+			const user = await UserModel.findOne({
+				passwordResetToken: resetToken,
+				passwordResetExpires: { $gt: new Date(Date.now()) },
+			});
+
+			if (!user) throw new Error('Token is invalid or has expired');
+			user.password = newPassword;
+
+			// 3.UPDATE CHANGEDPASSWORDAT PROPERTY FOR USER
+			user.passwordResetToken = undefined;
+			user.passwordResetExpires = undefined;
+			await user.save();
+
+			return 'Password reset succefully!';
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
 	@Mutation(() => UserWithToken)
 	async registerUser(
 		@Arg('input') input: RegisterUserInput
@@ -91,8 +142,6 @@ export class UserResolver {
 	): Promise<UserWithToken> {
 		const { currentPassword, newPassword } = input;
 		try {
-			console.log(newPassword);
-
 			const decoded = (await verfyToken(token)) as verifyPayload;
 
 			const user = await UserModel.findById(decoded.id).select(

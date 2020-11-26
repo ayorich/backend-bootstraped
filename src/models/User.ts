@@ -1,7 +1,17 @@
 import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
-import { prop as Property, getModelForClass, pre } from '@typegoose/typegoose';
+import {
+	prop as Property,
+	getModelForClass,
+	pre,
+	DocumentType,
+} from '@typegoose/typegoose';
 import { userRole } from './types';
-import { comparePassword, hashPassword } from '../utils';
+import {
+	comparePassword,
+	generateResetToken,
+	hashedToken,
+	hashPassword,
+} from '../utils';
 
 registerEnumType(userRole, { name: 'userRole' });
 
@@ -55,14 +65,25 @@ export class User {
 	@Property({ required: false, default: userRole.USER })
 	role?: userRole;
 
+	//staticsMethod
 	public static correctPassword(
 		currentPassword: string,
 		hashedPassword: string
 	) {
-		console.log(hashedPassword);
-		console.log(currentPassword);
 		const isCorrect = comparePassword(currentPassword, hashedPassword);
+
 		return isCorrect;
+	}
+	//instanceMethod
+	public async createPasswordResetToken(this: DocumentType<User>) {
+		const resetToken = generateResetToken();
+
+		this.passwordResetToken = hashedToken(resetToken);
+		this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+		await this.save({ validateBeforeSave: false });
+
+		return resetToken;
 	}
 }
 

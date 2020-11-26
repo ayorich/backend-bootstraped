@@ -43,3 +43,21 @@ export class UpdateUserPasswordInput {
 	@Length(6, 25)
 	newPassword: string;
 }
+
+@InputType()
+export class ForgetPasswordInput {
+	@Field()
+	email: string;
+
+	@Field()
+	baseUrl: string;
+}
+
+@InputType()
+export class ResetPasswordInput {
+	@Field()
+	token: string;
+
+	@Field()
+	newPassword: string;
+}
