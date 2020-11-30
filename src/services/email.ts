@@ -5,10 +5,10 @@ import { confirmAccountTemplate, passwordRecoveryTemplate } from '../utils';
 
 const {
 	NODE_ENV,
-	EMAIL_FROM,
-	MAIL_HOST,
-	HOST_USERNAME,
-	HOST_PASSWORD,
+	_EMAIL_FROM,
+	_MAIL_HOST,
+	_HOST_USERNAME,
+	_HOST_PASSWORD,
 } = process.env;
 
 class Email {
@@ -20,18 +20,18 @@ class Email {
 		this.to = userData.email;
 		this.firstName = userData.firstName;
 		this.url = url;
-		this.from = `Ayodele Kayode <${EMAIL_FROM}>`;
+		this.from = `Ayodele Kayode <${_EMAIL_FROM}>`;
 	}
 
 	newTransport() {
 		if (NODE_ENV === 'production') {
 			// ZOHO
 			return nodemailer.createTransport({
-				service: MAIL_HOST,
+				service: _MAIL_HOST,
 				secure: true,
 				auth: {
-					user: HOST_USERNAME,
-					pass: HOST_PASSWORD,
+					user: _HOST_USERNAME,
+					pass: _HOST_PASSWORD,
 				},
 			});
 		}
